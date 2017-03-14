@@ -1,0 +1,7 @@
+services:
+  entity_inheritance.plugin_manager.content_entity_type_bundle:
+    class: Drupal\entity_inheritance\Plugin\ContentEntityTypeBundleManager
+    parent: default_plugin_manager
+    calls:
+      - [setStringTranslation, ['@string_translation']]
+      - [onInit, []]

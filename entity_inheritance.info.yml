@@ -1,0 +1,5 @@
+name: Entity inheritance
+type: module
+description: Provides an entity storage driver that supports entities that inherit from a superclass.
+core: 8.x
+package: Entity
