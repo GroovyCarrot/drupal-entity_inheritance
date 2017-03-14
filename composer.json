@@ -1,0 +1,13 @@
+{
+  "name": "drupal/entity_inheritance",
+  "license": "Apache-2.0",
+  "type": "drupal-module",
+  "description": "Provides an entity storage driver that supports entities that inherit from a superclass.",
+  "authors": [
+    {
+      "name": "Jake Wise",
+      "email": "jake.wise@groovycarrot.co.uk",
+      "role": "Developer."
+    }
+  ]
+}
