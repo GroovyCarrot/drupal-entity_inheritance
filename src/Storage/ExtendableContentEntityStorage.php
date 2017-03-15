@@ -19,13 +19,13 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\entity_inheritance\EntityBundleClassLocating;
+use Drupal\entity_inheritance\ContentEntityBundleClassLocating;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 class ExtendableContentEntityStorage extends SqlContentEntityStorage {
 
-  /** @var EntityBundleClassLocating */
+  /** @var ContentEntityBundleClassLocating */
   protected $contentEntityBundleClassLocator;
 
   /**
@@ -48,7 +48,7 @@ class ExtendableContentEntityStorage extends SqlContentEntityStorage {
     EntityManagerInterface $entity_manager,
     CacheBackendInterface $cache,
     LanguageManagerInterface $language_manager,
-    EntityBundleClassLocating $contentEntityBundleSubClassManager
+    ContentEntityBundleClassLocating $contentEntityBundleSubClassManager
   ) {
     $this->contentEntityBundleClassLocator = $contentEntityBundleSubClassManager;
     parent::__construct($entity_type, $database, $entity_manager, $cache, $language_manager);

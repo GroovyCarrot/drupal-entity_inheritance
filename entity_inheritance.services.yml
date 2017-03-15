@@ -5,3 +5,7 @@ services:
     calls:
       - [setStringTranslation, ['@string_translation']]
       - [onInit, []]
+
+  entity_inheritance.data_provider.entity_bundle_field_definition:
+    class: Drupal\entity_inheritance\DataProvider\ContentEntityBundleFieldDefinitionProvider
+    arguments: ['@entity_inheritance.plugin_manager.content_entity_type_bundle']

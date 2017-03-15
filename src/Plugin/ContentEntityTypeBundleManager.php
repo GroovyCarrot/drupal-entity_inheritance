@@ -15,10 +15,10 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\entity_inheritance\EntityBundleClassLocating;
+use Drupal\entity_inheritance\ContentEntityBundleClassLocating;
 
 
-class ContentEntityTypeBundleManager extends DefaultPluginManager implements EntityBundleClassLocating {
+class ContentEntityTypeBundleManager extends DefaultPluginManager implements ContentEntityBundleClassLocating {
 
   use StringTranslationTrait;
 
@@ -72,6 +72,27 @@ class ContentEntityTypeBundleManager extends DefaultPluginManager implements Ent
   /**
    * @inheritdoc
    */
+  public function getBundleClassesForEntityType(string $entityTypeId, string $entityBaseClass): array {
+    $definitions = $this->getDefinitions();
+
+    $classes = [];
+    foreach ($definitions as $definition) {
+      if ($definition['entity_type_id'] !== $entityTypeId) {
+        continue;
+      }
+
+      $entityBundleClass = $definition['class'];
+      $this->validateEntitySubClass($entityTypeId, $entityBundleClass, $entityBaseClass);
+
+      $classes[$definition['bundle_id']] = $entityBundleClass;
+    }
+
+    return $classes;
+  }
+
+  /**
+   * @inheritdoc
+   */
   public function getClassForEntityBundle(string $entityTypeId, string $bundle, string $entityBaseClass): string {
     $definitions = $this->getDefinitions();
 
@@ -81,26 +102,7 @@ class ContentEntityTypeBundleManager extends DefaultPluginManager implements Ent
       }
 
       $entityBundleClass = $definition['class'];
-
-      if (!isset($this->reflectedSubClasses[$entityBaseClass][$entityBundleClass])) {
-        $reflection = new \ReflectionClass($entityBundleClass);
-        if (!$reflection->isInstantiable()) {
-          throw new \InvalidArgumentException($this->t('@class for entity type @entity_type_id must be instantiable.', [
-            '@class' => $reflection->getName(),
-            '@entity_type_id' => $entityTypeId,
-          ]));
-        }
-
-        if (!$reflection->isSubclassOf($entityBaseClass)) {
-          throw new \InvalidArgumentException($this->t('@class for @entity_type_id is not a subclass of entity base class @base_class', [
-            '@class' => $entityBundleClass,
-            '@base_class'=> $entityBaseClass,
-            '@entity_type_id' => $entityTypeId,
-          ]));
-        }
-
-        $this->reflectedSubClasses[$entityBaseClass][$entityBundleClass] = TRUE;
-      }
+      $this->validateEntitySubClass($entityTypeId, $entityBundleClass, $entityBaseClass);
 
       return $entityBundleClass;
     }
@@ -118,6 +120,32 @@ class ContentEntityTypeBundleManager extends DefaultPluginManager implements Ent
 
     $this->reflectedClasses[$entityBaseClass] = TRUE;
     return $entityBaseClass;
+  }
+
+  /**
+   * Validate that a bundle class can be instantiated, and is a subclass of the
+   * base class.
+   */
+  protected function validateEntitySubClass(string $entityTypeId, string $entityBundleClass, string $entityBaseClass): void {
+    if (!isset($this->reflectedSubClasses[$entityBaseClass][$entityBundleClass])) {
+      $reflection = new \ReflectionClass($entityBundleClass);
+      if (!$reflection->isInstantiable()) {
+        throw new \InvalidArgumentException($this->t('@class for entity type @entity_type_id must be instantiable.', [
+          '@class' => $reflection->getName(),
+          '@entity_type_id' => $entityTypeId,
+        ]));
+      }
+
+      if (!$reflection->isSubclassOf($entityBaseClass)) {
+        throw new \InvalidArgumentException($this->t('@class for @entity_type_id is not a subclass of entity base class @base_class', [
+          '@class' => $entityBundleClass,
+          '@base_class'=> $entityBaseClass,
+          '@entity_type_id' => $entityTypeId,
+        ]));
+      }
+
+      $this->reflectedSubClasses[$entityBaseClass][$entityBundleClass] = TRUE;
+    }
   }
 
 }

@@ -1,0 +1,17 @@
+<?php
+/**
+ * @file
+ * Entity inheritance
+ *
+ * Created by Jake Wise 15/03/2017.
+ *
+ * You are permitted to use, modify, and distribute this file in accordance with
+ * the terms of the license agreement accompanying it.
+ */
+
+/**
+ * Implements hook_entity_bundle_field_info().
+ */
+function entity_inheritance_entity_bundle_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+  return \Drupal::service('entity_inheritance.data_provider.entity_bundle_field_definition')->getBundleFieldDefinitions($entity_type, $bundle, $base_field_definitions);
+}

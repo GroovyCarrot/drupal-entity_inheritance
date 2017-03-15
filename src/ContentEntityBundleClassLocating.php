@@ -12,11 +12,18 @@
 namespace Drupal\entity_inheritance;
 
 
-interface EntityBundleClassLocating {
+interface ContentEntityBundleClassLocating {
 
   /**
    * Get the instance class for an entity bundle.
    */
   public function getClassForEntityBundle(string $entityTypeId, string $bundle, string $entityBaseClass): string;
+
+  /**
+   * Get a list of classes for entity bundles.
+   *
+   * @return array<string, classname<ContentEntityInterface>>
+   */
+  public function getBundleClassesForEntityType(string $entityTypeId, string $entityBaseClass): array;
 
 }
